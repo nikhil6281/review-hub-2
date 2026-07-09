@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+  --background: #08090c;
+  --surface: #101218;
+  --surface-2: #15181f;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --foreground: #f5f6f8;
+  --muted: #9aa0b0;
+  --muted-2: #6b7080;
+
+  --accent: #8b6bff;
+  --accent-2: #ff5ca8;
+  --accent-3: #37e2c4;
+  --gold: #f6c453;
+  --gold-dim: #a9843a;
+
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-fraunces);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
+  --color-gold: var(--gold);
+  --color-gold-dim: var(--gold-dim);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  background-image:
+    radial-gradient(circle at 12% 0%, rgba(139, 107, 255, 0.16), transparent 42%),
+    radial-gradient(circle at 88% 8%, rgba(255, 92, 168, 0.12), transparent 40%),
+    radial-gradient(circle at 50% 100%, rgba(55, 226, 196, 0.08), transparent 45%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+::selection {
+  background: var(--accent);
+  color: white;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.gradient-text {
+  background: linear-gradient(100deg, #b9a3ff 0%, #8b6bff 35%, #ff5ca8 75%, #ffb27a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(20px);
+}
+
+.glow-border {
+  position: relative;
+}
+
+.glow-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(139, 107, 255, 0.6), rgba(255, 92, 168, 0.3), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+.animate-float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
