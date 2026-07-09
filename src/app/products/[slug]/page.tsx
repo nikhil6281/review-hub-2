@@ -11,10 +11,14 @@ import {
   products,
   productsByCategory,
 } from "@/lib/data";
+import { getReviewsForProduct } from "@/lib/reviews";
+import { auth } from "@/auth";
 import { StarRating } from "@/components/star-rating";
 import { RatingBadge } from "@/components/rating-badge";
 import { SourceRatingRow } from "@/components/source-rating-row";
 import { ProductCard } from "@/components/product-card";
+import { ReviewForm } from "@/components/review-form";
+import { ReviewList } from "@/components/review-list";
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -40,6 +44,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const count = totalReviewCount(product.sources);
   const gallery = [product.heroImage, ...product.gallery];
   const related = productsByCategory(product.categorySlug).filter((p) => p.slug !== product.slug).slice(0, 4);
+
+  const [session, reviews] = await Promise.all([auth(), getReviewsForProduct(slug)]);
+  const currentUserId = session?.user?.id ? Number(session.user.id) : undefined;
+  const myReview = reviews.find((r) => r.user_id === currentUserId);
+  const communityAvg = reviews.length
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
@@ -141,6 +152,51 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {product.sources.map((s) => (
             <SourceRatingRow key={s.source} review={s} />
           ))}
+        </div>
+      </div>
+
+      {/* Community reviews */}
+      <div className="mt-16">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="font-display text-2xl font-medium tracking-tight">
+              Reviews from ProductReviewHub members
+            </h2>
+            {reviews.length > 0 ? (
+              <div className="mt-2 flex items-center gap-2.5">
+                <StarRating rating={communityAvg} size={16} />
+                <span className="text-sm text-muted">
+                  {communityAvg.toFixed(1)} · {reviews.length} review{reviews.length === 1 ? "" : "s"}
+                </span>
+              </div>
+            ) : (
+              <p className="mt-2 text-sm text-muted">Be the first member to review this product.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div>
+            {session?.user ? (
+              <ReviewForm
+                productSlug={product.slug}
+                existingReview={
+                  myReview
+                    ? { rating: myReview.rating, title: myReview.title, body: myReview.body }
+                    : undefined
+                }
+              />
+            ) : (
+              <div className="glass-panel rounded-2xl p-6 text-sm text-muted">
+                <Link href="/login" className="font-medium text-foreground hover:underline">
+                  Sign in
+                </Link>{" "}
+                to leave a review for this product.
+              </div>
+            )}
+          </div>
+
+          <ReviewList reviews={reviews} productSlug={product.slug} currentUserId={currentUserId} />
         </div>
       </div>
 

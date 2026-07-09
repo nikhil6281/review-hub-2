@@ -37,3 +37,30 @@ export type LoginFormState =
       message?: string;
     }
   | undefined;
+
+export const ReviewFormSchema = z.object({
+  rating: z.coerce
+    .number()
+    .int({ error: "Pick a star rating." })
+    .min(1, { error: "Pick a star rating." })
+    .max(5, { error: "Pick a star rating." }),
+  title: z.string().trim().max(120, { error: "Keep the title under 120 characters." }).optional(),
+  body: z
+    .string()
+    .trim()
+    .min(10, { error: "Write at least 10 characters." })
+    .max(2000, { error: "Keep it under 2000 characters." }),
+});
+
+export type ReviewFormState =
+  | {
+      errors?: {
+        rating?: string[];
+        title?: string[];
+        body?: string[];
+      };
+      message?: string;
+      success?: boolean;
+      wasUpdate?: boolean;
+    }
+  | undefined;
